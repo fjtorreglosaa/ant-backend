@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+
+  sqlserver-db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: always
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      ACCEPT_EULA: ${ACCEPT_EULA}
+    volumes:
+      - ./sqlserverdata:/var/opt/mssql
+    ports:
+      - 1434:1433

@@ -1,0 +1,327 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("SQLSERVER_URL")
+}
+
+model Subject {
+  // Columns
+  id                 String    @id @db.UniqueIdentifier @map("Id")
+  name               String?   @db.VarChar(MAX)
+  tag                String?   @db.VarChar(50)
+  internalCode       String?   @db.VarChar(50)
+  isActive           Boolean?  @db.Bit
+  image              String?   @db.NVarChar(MAX)
+  dependencyId       String?   @db.UniqueIdentifier
+  subjectTypeId      String?   @db.UniqueIdentifier
+  subjectParameterId String?   @db.UniqueIdentifier
+  locationId         String?   @db.UniqueIdentifier
+  createdBy          String?   @db.VarChar(50)
+  updatedBy          String?   @db.VarChar(50)
+  createdAt          DateTime? @db.DateTime2
+  updatedAt          DateTime? @db.DateTime2
+
+  // Relationships
+  dependency       Dependency?        @relation(fields: [dependencyId], references: [id])
+  subjectType      SubjectType?       @relation(fields: [subjectTypeId], references: [id])
+  subjectParameter SubjectParamenter? @relation(fields: [subjectParameterId], references: [id])
+  location         Location?          @relation(fields: [locationId], references: [id])
+
+  // Table Name
+  @@map("Subjects")
+}
+
+model SubjectType {
+  // Columns
+  id        String    @id @db.UniqueIdentifier
+  name      String?   @db.VarChar(MAX)
+  createdBy String?   @db.VarChar(50)
+  updatedBy String?   @db.VarChar(50)
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
+
+  // Relationships
+  subjects Subject[] @relation
+
+  // Table Name
+  @@map("SubjectTypes")
+}
+
+model Dependency {
+  // Columns
+  id               String    @id @db.UniqueIdentifier
+  name             String?   @db.NVarChar(MAX)
+  parentId         String?   @db.UniqueIdentifier
+  createdBy        String?   @db.UniqueIdentifier
+  updatedBy        String?   @db.UniqueIdentifier
+  createdAt        DateTime? @db.DateTime2
+  updatedAt        DateTime? @db.DateTime2
+  userDependencyId String?   @db.UniqueIdentifier
+
+  // Relationships
+  subjects       Subject[]       @relation
+  userDependency UserDependency? @relation(fields: [userDependencyId], references: [id])
+
+  // Table Name
+  @@map("Dependencies")
+}
+
+model Component {
+  // Columns
+  id             String    @id @db.UniqueIdentifier
+  name           String?   @db.NVarChar(MAX)
+  image          String?   @db.NVarChar(MAX)
+  parentId       String?   @db.UniqueIdentifier
+  equipmentId    String?   @db.UniqueIdentifier
+  systemId       String?   @db.UniqueIdentifier
+  manufacturerId String?   @db.UniqueIdentifier
+  statusId       String?   @db.UniqueIdentifier
+  createdBy      String?   @db.UniqueIdentifier
+  updatedBy      String?   @db.UniqueIdentifier
+  createdAt      DateTime? @db.DateTime2
+  updatedAt      DateTime? @db.DateTime2
+
+  // Relationships
+  componentChanges ComponentChange[] @relation
+  system           System?           @relation(fields: [systemId], references: [id])
+  manufacturer     Manufacturer?     @relation(fields: [manufacturerId], references: [id])
+  status           Status?           @relation(fields: [statusId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  // Table Name
+  @@map("Components")
+}
+
+model Status {
+  // Columns
+  id          String    @id @db.UniqueIdentifier
+  name        String?   @db.NVarChar(MAX)
+  description String?   @db.NVarChar(MAX)
+  createdBy   String?   @db.UniqueIdentifier
+  updatedBy   String?   @db.UniqueIdentifier
+  createdAt   DateTime? @db.DateTime2
+  updatedAt   DateTime? @db.DateTime2
+
+  // Relationships
+  components       Component[]       @relation
+  componentChanges ComponentChange[] @relation
+
+  // Table Name
+  @@map("Statuses")
+}
+
+model SubjectParamenter {
+  // Columns
+  id                       String    @id @db.UniqueIdentifier
+  name                     String?   @db.NVarChar(MAX)
+  model                    String?   @db.NVarChar(50)
+  series                   String?   @db.NVarChar(50)
+  currentOperatingTime     Decimal?  @db.Decimal()
+  currentOperatingDistance Decimal?  @db.Decimal()
+  warrantyTime             Int?      @db.Int()
+  warrantyDistance         Int?      @db.Int()
+  createdBy                String?   @db.UniqueIdentifier
+  updatedBy                String?   @db.UniqueIdentifier
+  createdAt                DateTime? @db.DateTime2
+  updatedAt                DateTime? @db.DateTime2
+
+  // Relationships
+  subjects Subject[] @relation
+
+  // Table Name
+  @@map("SubjectParamenters")
+}
+
+model ComponentParamenter {
+  // Columns
+  id                          String    @id @db.UniqueIdentifier
+  name                        String?   @db.NVarChar(MAX)
+  model                       String?   @db.NVarChar(50)
+  series                      String?   @db.NVarChar(50)
+  internalCode                String?   @db.NVarChar(50)
+  externalCode                String?   @db.NVarChar(50)
+  cost                        Decimal?  @db.Decimal()
+  dailyWorkTime               Decimal?  @db.Decimal()
+  estimatedChangeoverDate     DateTime? @db.DateTime2
+  changeoverFrequencyTime     Decimal?  @db.Decimal()
+  changeoverFrequencyDistance Decimal?  @db.Decimal()
+  currentOperatingTime        Decimal?  @db.Decimal()
+  currentOperatingDistance    Decimal?  @db.Decimal()
+  distanceFromInstallation    Decimal?  @db.Decimal()
+  timeFromInstallation        Decimal?  @db.Decimal()
+  dailyWorkDistance           Decimal?  @db.Decimal()
+  expectedServiceLife         Decimal?  @db.Decimal()
+  expectedServiceDistance     Decimal?  @db.Decimal()
+  manufacterId                String?   @db.UniqueIdentifier
+  createdBy                   String?   @db.UniqueIdentifier
+  updatedBy                   String?   @db.UniqueIdentifier
+  createdAt                   DateTime? @db.DateTime2
+  updatedAt                   DateTime? @db.DateTime2
+
+  // Table Name
+  @@map("ComponentParamenters")
+}
+
+model Location {
+  // Columns
+  id        String    @id @db.UniqueIdentifier
+  name      String?   @db.NVarChar(MAX)
+  createdBy String?   @db.UniqueIdentifier
+  updatedBy String?   @db.UniqueIdentifier
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
+
+  // Relationships
+  subjects Subject[] @relation
+
+  // Table Name
+  @@map("Locations")
+}
+
+model Manufacturer {
+  // Columns
+  id        String    @id @db.UniqueIdentifier
+  name      String?   @db.NVarChar(MAX)
+  createdBy String?   @db.UniqueIdentifier
+  updatedBy String?   @db.UniqueIdentifier
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
+
+  // Relationships
+  components Component[] @relation
+
+  // Table Name
+  @@map("Manufacturers")
+}
+
+model System {
+  // Columns
+  id          String    @id @db.UniqueIdentifier
+  name        String?   @db.NVarChar(MAX)
+  parentId    String?   @db.UniqueIdentifier
+  description String?   @db.NVarChar(MAX)
+  createdBy   String?   @db.UniqueIdentifier
+  updatedBy   String?   @db.UniqueIdentifier
+  createdAt   DateTime? @db.DateTime2
+  updatedAt   DateTime? @db.DateTime2
+
+  // Relationships
+  components Component[] @relation
+
+  // Table Name
+  @@map("Systems")
+}
+
+model ComponentChange {
+  // Columns
+  id                       String    @id @db.UniqueIdentifier
+  name                     String?   @db.VarChar(MAX)
+  description              String?   @db.NVarChar(MAX)
+  installationDate         DateTime? @db.DateTime2
+  removalDate              DateTime? @db.DateTime2
+  workOrderId              String?   @db.NVarChar(50)
+  workDescription          String?   @db.NVarChar(MAX)
+  technniciansObservations String?   @db.NVarChar(MAX)
+  newComponent             Boolean?  @db.Bit
+  repairedComponent        Boolean?  @db.Bit
+  warrantyComponent        Boolean?  @db.Bit
+  shouldBeDisposed         Boolean?  @db.Bit
+  isAPartialRepair         Boolean?  @db.Bit
+  isATotalRepair           Boolean?  @db.Bit
+  isAWarranty              Boolean?  @db.Bit
+  installedComponentId     String?   @db.UniqueIdentifier
+  uninstalledComponentId   String?   @db.UniqueIdentifier
+  document                 String?   @db.NVarChar(MAX)
+  image                    String?   @db.NVarChar(MAX)
+  statusId                 String?   @db.UniqueIdentifier
+  createdBy                String?   @db.UniqueIdentifier
+  updatedBy                String?   @db.UniqueIdentifier
+  createdAt                DateTime? @db.DateTime2
+  updatedAt                DateTime? @db.DateTime2
+
+  // Relationships
+  status             Status?    @relation(fields: [statusId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  installedComponent Component? @relation(fields: [installedComponentId], references: [id])
+
+  // Table Name
+  @@map("ComponentChanges")
+}
+
+model UserDependency {
+  // Columns
+  id           String    @id @db.UniqueIdentifier
+  userId       String?   @db.UniqueIdentifier
+  dependencyId String?   @db.UniqueIdentifier
+  createdBy    String?   @db.UniqueIdentifier
+  updatedBy    String?   @db.UniqueIdentifier
+  createdAt    DateTime? @db.DateTime2
+  updatedAt    DateTime? @db.DateTime2
+
+  // Relationships
+  user         User[]       @relation
+  dependencies Dependency[] @relation
+
+  // Table Name
+  @@map("UserDependencies")
+}
+
+model User {
+  // Columns
+  id               String    @id @db.UniqueIdentifier
+  name             String?   @db.NVarChar(50)
+  profileId        String?   @db.UniqueIdentifier
+  username         String?   @db.NVarChar(50)
+  email            String?   @db.NVarChar(100)
+  password         String?   @db.NVarChar(MAX)
+  isActive         Boolean?  @db.Bit
+  userDependencyId String?   @db.UniqueIdentifier
+  createdBy        String?   @db.UniqueIdentifier
+  updatedBy        String?   @db.UniqueIdentifier
+  createdAt        DateTime? @db.DateTime2
+  updatedAt        DateTime? @db.DateTime2
+
+  // Relationships
+  profile        Profile?        @relation(fields: [profileId], references: [id])
+  userDependency UserDependency? @relation(fields: [userDependencyId], references: [id])
+
+  // Table Name
+  @@map("Users")
+}
+
+model Profile {
+  // Columns
+  id          String    @id @db.UniqueIdentifier
+  name        String?   @db.NVarChar(50)
+  description String?   @db.NVarChar(MAX)
+  roleId      String?   @db.UniqueIdentifier
+  createdBy   String?   @db.UniqueIdentifier
+  updatedBy   String?   @db.UniqueIdentifier
+  createdAt   DateTime? @db.DateTime2
+  updatedAt   DateTime? @db.DateTime2
+
+  // Relationships
+  users User[] @relation
+  role  Role?  @relation(fields: [roleId], references: [id])
+
+  // Table Name
+  @@map("Profiles")
+}
+
+model Role {
+  // Columns
+  id          String    @id @db.UniqueIdentifier
+  name        String?   @db.NVarChar(50)
+  description String?   @db.NVarChar(MAX)
+  createdBy   String?   @db.UniqueIdentifier
+  updatedBy   String?   @db.UniqueIdentifier
+  createdAt   DateTime? @db.DateTime2
+  updatedAt   DateTime? @db.DateTime2
+
+  // Relationships
+  profiles Profile[] @relation
+
+  // Table Name
+  @@map("Roles")
+}
