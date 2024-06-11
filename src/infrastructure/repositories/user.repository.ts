@@ -14,13 +14,17 @@ export class UserRepository extends BaseRepository<UserEntity> implements IUserR
 
     async getUserByEmail( email: string ) : Promise<UserEntity | null> {
         
-        const user = this.model.findFirst({
+        const user = await this.model.findFirst({
             where:{
                 email: email
             }
         });
 
-        return UserEntity.fromObject( user ) ?? null;
+        if (!user) {
+            return null;
+        }
+
+        return UserEntity.fromObject( user );
 
     }
 }

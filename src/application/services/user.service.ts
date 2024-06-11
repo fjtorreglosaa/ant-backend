@@ -14,7 +14,13 @@ export class UserService {
             const userExists = await this.userRepository.getUserByEmail( createUserDto.email );
             if( userExists ) throw CustomError.badRequest( `User with email ${ createUserDto.email } already exists.` );
     
-            const criteria = { id: UUID(), createdAt: Date.now.toString(), ...createUserDto };
+            const criteria = { 
+                id: UUID(), 
+                createdAt: new Date().toISOString(), 
+                isActive: true,
+                ...createUserDto
+            };
+
             const user = UserEntity.fromObject( criteria );
             const result = await this.userRepository.create( user );
 

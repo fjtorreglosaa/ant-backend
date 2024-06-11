@@ -1,4 +1,4 @@
-import { IBaseRepository } from '../../domain';
+import { CustomError, IBaseRepository } from '../../domain';
 import { PrismaClient } from '@prisma/client';
 
 export abstract class BaseRepository<Entity> implements IBaseRepository<Entity> {
@@ -16,6 +16,7 @@ export abstract class BaseRepository<Entity> implements IBaseRepository<Entity> 
             await this.model.create({ data: item });
             return true;
         } catch (error) {
+            console.error("Error creating entity:", error);
             return false;
         }
     }

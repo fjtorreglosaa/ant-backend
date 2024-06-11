@@ -53,21 +53,35 @@ model SubjectType {
 
 model Dependency {
   // Columns
-  id               String    @id @db.UniqueIdentifier
-  name             String?   @db.NVarChar(MAX)
-  parentId         String?   @db.UniqueIdentifier
-  createdBy        String?   @db.UniqueIdentifier
-  updatedBy        String?   @db.UniqueIdentifier
-  createdAt        DateTime? @db.DateTime2
-  updatedAt        DateTime? @db.DateTime2
-  userDependencyId String?   @db.UniqueIdentifier
+  id        String    @id @db.UniqueIdentifier
+  name      String?   @db.NVarChar(50)
+  typeId    String?   @db.UniqueIdentifier
+  parentId  String?   @db.UniqueIdentifier
+  createdBy String?   @db.UniqueIdentifier
+  updatedBy String?   @db.UniqueIdentifier
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
 
   // Relationships
-  subjects       Subject[]       @relation
-  userDependency UserDependency? @relation(fields: [userDependencyId], references: [id])
+  type     DependencyType?  @relation(fields: [typeId], references: [id])
+  subjects Subject[]        @relation
+  users    UserDependency[] @relation
 
   // Table Name
   @@map("Dependencies")
+}
+
+model DependencyType {
+  // Columns
+  id          String  @id @db.UniqueIdentifier
+  name        String? @db.NVarChar(50)
+  description String? @db.NVarChar(125)
+
+  // Relationships
+  dependencies Dependency[] @relation
+
+  // Table Name
+  @@map("DependencyTypes")
 }
 
 model Component {
@@ -261,8 +275,8 @@ model UserDependency {
   updatedAt    DateTime? @db.DateTime2
 
   // Relationships
-  users        User[]       @relation
-  dependencies Dependency[] @relation
+  user       User?       @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  dependency Dependency? @relation(fields: [dependencyId], references: [id])
 
   // Table Name
   @@map("UserDependencies")
@@ -271,11 +285,10 @@ model UserDependency {
 model User {
   // Columns
   id               String    @id @db.UniqueIdentifier
-  name             String?   @db.NVarChar(50)
-  profileId        String?   @db.UniqueIdentifier
   email            String?   @db.NVarChar(100)
   password         String?   @db.NVarChar(MAX)
   isActive         Boolean?  @db.Bit
+  profileId        String?   @db.UniqueIdentifier
   userDependencyId String?   @db.UniqueIdentifier
   createdBy        String?   @db.UniqueIdentifier
   updatedBy        String?   @db.UniqueIdentifier
@@ -283,8 +296,8 @@ model User {
   updatedAt        DateTime? @db.DateTime2
 
   // Relationships
-  profile        Profile?        @relation(fields: [profileId], references: [id])
-  userDependency UserDependency? @relation(fields: [userDependencyId], references: [id])
+  profile      Profile?         @relation(fields: [profileId], references: [id])
+  dependencies UserDependency[] @relation
 
   // Table Name
   @@map("Users")
@@ -293,7 +306,11 @@ model User {
 model Profile {
   // Columns
   id          String    @id @db.UniqueIdentifier
-  username    String?   @db.NVarChar(50)
+  name        String?   @db.NVarChar(50)
+  GroupId     String?   @db.UniqueIdentifier
+  isActive    Boolean?  @db.Bit
+  Photo       String?   @db.NVarChar(MAX)
+  Phone       String?   @db.NVarChar(50)
   preferences String?   @db.NVarChar(MAX)
   createdBy   String?   @db.UniqueIdentifier
   updatedBy   String?   @db.UniqueIdentifier
