@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { DependencyContainer } from '../../../config/plugins';
-import { StatusController } from '../status/controller';
 import { UserController } from './controller';
 
 
@@ -13,7 +12,8 @@ export class UserRoutes {
         const userController = container.resolve<UserController>('UserController');
 
         // Routes
-        router.post('/', (req, res) => userController.createUser(req, res));
+        router.post('/signup', userController.createUser );
+        router.post('/signin', userController.loginUser );
 
         return router;
 

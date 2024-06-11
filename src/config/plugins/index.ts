@@ -4,3 +4,4 @@ export * from './dependency-container.plugin';
 export * from './dependency-registrar.plugin';
 export * from './jwt.plugin';
 export * from './regular-expressions.plugin';
+export * from './bcrypt.plugin';
