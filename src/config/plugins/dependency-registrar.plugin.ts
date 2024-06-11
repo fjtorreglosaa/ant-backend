@@ -1,28 +1,38 @@
 import { PrismaClient } from "@prisma/client";
 import { container } from "./dependency-container.plugin";
-import { StatusRepository } from "../../infrastructure";
+import { RoleRepository, StatusRepository, UserRepository } from "../../infrastructure";
 import { StatusService } from "../../application";
-import { StatusController } from "../../presentation/controllers";
+import { StatusController, UserController } from "../../presentation/controllers";
 
 export class DependencyRegistrar {
 
   static registerDependencies() {
 
-    // Prisma
     const prisma = new PrismaClient();
+
+    const statusRepository = new StatusRepository(prisma);
+    const userRepository = new UserRepository(prisma);
+    const roleRepository = new RoleRepository(prisma);
+
+    const statusService = new StatusService(statusRepository);
+
+    const statusController = new StatusController(statusService);
+    const userController = new UserController(statusService);
+
+    // Prisma
     container.register('PrismaClient', prisma);
 
     // Repositories
-    const statusRepository = new StatusRepository(prisma);
     container.register('StatusRepository', statusRepository);
+    container.register('UserRepository', userRepository);
+    container.register('RoleRepository', roleRepository);
 
     // Services
-    const statusService = new StatusService(statusRepository);
     container.register('StatusService', statusService);
 
     // Controllers
-    const statusController = new StatusController(statusService);
     container.register('StatusController', statusController);
+    container.register('UserController', userController);
 
   }
 

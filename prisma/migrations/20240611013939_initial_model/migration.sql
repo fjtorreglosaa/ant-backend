@@ -25,6 +25,7 @@ CREATE TABLE [dbo].[Subjects] (
 CREATE TABLE [dbo].[SubjectTypes] (
     [id] UNIQUEIDENTIFIER NOT NULL,
     [name] VARCHAR(max),
+    [isActive] BIT,
     [createdBy] VARCHAR(50),
     [updatedBy] VARCHAR(50),
     [createdAt] DATETIME2,
@@ -188,6 +189,10 @@ CREATE TABLE [dbo].[UserDependencies] (
     [id] UNIQUEIDENTIFIER NOT NULL,
     [userId] UNIQUEIDENTIFIER,
     [dependencyId] UNIQUEIDENTIFIER,
+    [createdBy] UNIQUEIDENTIFIER,
+    [updatedBy] UNIQUEIDENTIFIER,
+    [createdAt] DATETIME2,
+    [updatedAt] DATETIME2,
     CONSTRAINT [UserDependencies_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
@@ -196,7 +201,6 @@ CREATE TABLE [dbo].[Users] (
     [id] UNIQUEIDENTIFIER NOT NULL,
     [name] NVARCHAR(50),
     [profileId] UNIQUEIDENTIFIER,
-    [username] NVARCHAR(50),
     [email] NVARCHAR(100),
     [password] NVARCHAR(max),
     [isActive] BIT,
@@ -211,9 +215,8 @@ CREATE TABLE [dbo].[Users] (
 -- CreateTable
 CREATE TABLE [dbo].[Profiles] (
     [id] UNIQUEIDENTIFIER NOT NULL,
-    [name] NVARCHAR(50),
-    [description] NVARCHAR(max),
-    [roleId] UNIQUEIDENTIFIER,
+    [username] NVARCHAR(50),
+    [preferences] NVARCHAR(max),
     [createdBy] UNIQUEIDENTIFIER,
     [updatedBy] UNIQUEIDENTIFIER,
     [createdAt] DATETIME2,
@@ -222,7 +225,44 @@ CREATE TABLE [dbo].[Profiles] (
 );
 
 -- CreateTable
+CREATE TABLE [dbo].[ProfileRoles] (
+    [id] UNIQUEIDENTIFIER NOT NULL,
+    [roleId] UNIQUEIDENTIFIER,
+    [profileId] UNIQUEIDENTIFIER,
+    [createdBy] UNIQUEIDENTIFIER,
+    [updatedBy] UNIQUEIDENTIFIER,
+    [createdAt] DATETIME2,
+    [updatedAt] DATETIME2,
+    CONSTRAINT [ProfileRoles_pkey] PRIMARY KEY CLUSTERED ([id])
+);
+
+-- CreateTable
 CREATE TABLE [dbo].[Roles] (
+    [id] UNIQUEIDENTIFIER NOT NULL,
+    [name] NVARCHAR(50),
+    [description] NVARCHAR(max),
+    [isCustom] BIT,
+    [createdBy] UNIQUEIDENTIFIER,
+    [updatedBy] UNIQUEIDENTIFIER,
+    [createdAt] DATETIME2,
+    [updatedAt] DATETIME2,
+    CONSTRAINT [Roles_pkey] PRIMARY KEY CLUSTERED ([id])
+);
+
+-- CreateTable
+CREATE TABLE [dbo].[RolePermissions] (
+    [id] UNIQUEIDENTIFIER NOT NULL,
+    [roleId] UNIQUEIDENTIFIER,
+    [permissionId] UNIQUEIDENTIFIER,
+    [createdBy] UNIQUEIDENTIFIER,
+    [updatedBy] UNIQUEIDENTIFIER,
+    [createdAt] DATETIME2,
+    [updatedAt] DATETIME2,
+    CONSTRAINT [RolePermissions_pkey] PRIMARY KEY CLUSTERED ([id])
+);
+
+-- CreateTable
+CREATE TABLE [dbo].[Permissions] (
     [id] UNIQUEIDENTIFIER NOT NULL,
     [name] NVARCHAR(50),
     [description] NVARCHAR(max),
@@ -230,7 +270,21 @@ CREATE TABLE [dbo].[Roles] (
     [updatedBy] UNIQUEIDENTIFIER,
     [createdAt] DATETIME2,
     [updatedAt] DATETIME2,
-    CONSTRAINT [Roles_pkey] PRIMARY KEY CLUSTERED ([id])
+    CONSTRAINT [Permissions_pkey] PRIMARY KEY CLUSTERED ([id])
+);
+
+-- CreateTable
+CREATE TABLE [dbo].[Invitations] (
+    [id] UNIQUEIDENTIFIER NOT NULL,
+    [verificationCode] SMALLINT,
+    [statusId] UNIQUEIDENTIFIER,
+    [isActive] BIT,
+    [expirationDate] DATETIME2,
+    [createdBy] UNIQUEIDENTIFIER,
+    [updatedBy] UNIQUEIDENTIFIER,
+    [createdAt] DATETIME2,
+    [updatedAt] DATETIME2,
+    CONSTRAINT [Invitations_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
 -- AddForeignKey
@@ -270,7 +324,16 @@ ALTER TABLE [dbo].[Users] ADD CONSTRAINT [Users_profileId_fkey] FOREIGN KEY ([pr
 ALTER TABLE [dbo].[Users] ADD CONSTRAINT [Users_userDependencyId_fkey] FOREIGN KEY ([userDependencyId]) REFERENCES [dbo].[UserDependencies]([id]) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE [dbo].[Profiles] ADD CONSTRAINT [Profiles_roleId_fkey] FOREIGN KEY ([roleId]) REFERENCES [dbo].[Roles]([id]) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE [dbo].[ProfileRoles] ADD CONSTRAINT [ProfileRoles_roleId_fkey] FOREIGN KEY ([roleId]) REFERENCES [dbo].[Roles]([id]) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[ProfileRoles] ADD CONSTRAINT [ProfileRoles_profileId_fkey] FOREIGN KEY ([profileId]) REFERENCES [dbo].[Profiles]([id]) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[RolePermissions] ADD CONSTRAINT [RolePermissions_roleId_fkey] FOREIGN KEY ([roleId]) REFERENCES [dbo].[Roles]([id]) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[RolePermissions] ADD CONSTRAINT [RolePermissions_permissionId_fkey] FOREIGN KEY ([permissionId]) REFERENCES [dbo].[Permissions]([id]) ON DELETE SET NULL ON UPDATE CASCADE;
 
 COMMIT TRAN;
 

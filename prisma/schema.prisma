@@ -9,7 +9,7 @@ datasource db {
 
 model Subject {
   // Columns
-  id                 String    @id @db.UniqueIdentifier @map("Id")
+  id                 String    @id @map("Id") @db.UniqueIdentifier
   name               String?   @db.VarChar(MAX)
   tag                String?   @db.VarChar(50)
   internalCode       String?   @db.VarChar(50)
@@ -38,6 +38,7 @@ model SubjectType {
   // Columns
   id        String    @id @db.UniqueIdentifier
   name      String?   @db.VarChar(MAX)
+  isActive  Boolean?  @db.Bit
   createdBy String?   @db.VarChar(50)
   updatedBy String?   @db.VarChar(50)
   createdAt DateTime? @db.DateTime2
@@ -260,7 +261,7 @@ model UserDependency {
   updatedAt    DateTime? @db.DateTime2
 
   // Relationships
-  user         User[]       @relation
+  users        User[]       @relation
   dependencies Dependency[] @relation
 
   // Table Name
@@ -272,7 +273,6 @@ model User {
   id               String    @id @db.UniqueIdentifier
   name             String?   @db.NVarChar(50)
   profileId        String?   @db.UniqueIdentifier
-  username         String?   @db.NVarChar(50)
   email            String?   @db.NVarChar(100)
   password         String?   @db.NVarChar(MAX)
   isActive         Boolean?  @db.Bit
@@ -293,23 +293,77 @@ model User {
 model Profile {
   // Columns
   id          String    @id @db.UniqueIdentifier
-  name        String?   @db.NVarChar(50)
-  description String?   @db.NVarChar(MAX)
-  roleId      String?   @db.UniqueIdentifier
+  username    String?   @db.NVarChar(50)
+  preferences String?   @db.NVarChar(MAX)
   createdBy   String?   @db.UniqueIdentifier
   updatedBy   String?   @db.UniqueIdentifier
   createdAt   DateTime? @db.DateTime2
   updatedAt   DateTime? @db.DateTime2
 
   // Relationships
-  users User[] @relation
-  role  Role?  @relation(fields: [roleId], references: [id])
+  users User[]        @relation
+  roles ProfileRole[] @relation
 
   // Table Name
   @@map("Profiles")
 }
 
+model ProfileRole {
+  // Columns
+  id        String    @id @db.UniqueIdentifier
+  roleId    String?   @db.UniqueIdentifier
+  profileId String?   @db.UniqueIdentifier
+  createdBy String?   @db.UniqueIdentifier
+  updatedBy String?   @db.UniqueIdentifier
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
+
+  // Relationships
+  role    Role?    @relation(fields: [roleId], references: [id])
+  profile Profile? @relation(fields: [profileId], references: [id])
+
+  // Table Name
+  @@map("ProfileRoles")
+}
+
 model Role {
+  // Columns
+  id          String    @id @db.UniqueIdentifier
+  name        String?   @db.NVarChar(50)
+  description String?   @db.NVarChar(MAX)
+  isCustom    Boolean?  @db.Bit
+  createdBy   String?   @db.UniqueIdentifier
+  updatedBy   String?   @db.UniqueIdentifier
+  createdAt   DateTime? @db.DateTime2
+  updatedAt   DateTime? @db.DateTime2
+
+  // Relationships
+  profiles    ProfileRole[]    @relation
+  permissions RolePermission[] @relation
+
+  // Table Name
+  @@map("Roles")
+}
+
+model RolePermission {
+  // Columns
+  id           String    @id @db.UniqueIdentifier
+  roleId       String?   @db.UniqueIdentifier
+  permissionId String?   @db.UniqueIdentifier
+  createdBy    String?   @db.UniqueIdentifier
+  updatedBy    String?   @db.UniqueIdentifier
+  createdAt    DateTime? @db.DateTime2
+  updatedAt    DateTime? @db.DateTime2
+
+  // Relationships
+  role       Role?       @relation(fields: [roleId], references: [id])
+  permission Permission? @relation(fields: [permissionId], references: [id])
+
+  // Table Name
+  @@map("RolePermissions")
+}
+
+model Permission {
   // Columns
   id          String    @id @db.UniqueIdentifier
   name        String?   @db.NVarChar(50)
@@ -320,8 +374,24 @@ model Role {
   updatedAt   DateTime? @db.DateTime2
 
   // Relationships
-  profiles Profile[] @relation
+  roles RolePermission[] @relation
 
   // Table Name
-  @@map("Roles")
+  @@map("Permissions")
+}
+
+model Invitation {
+  // Columns
+  id               String    @id @db.UniqueIdentifier
+  verificationCode Int?      @db.SmallInt
+  statusId         String?   @db.UniqueIdentifier
+  isActive         Boolean?  @db.Bit
+  expirationDate   DateTime? @db.DateTime2
+  createdBy        String?   @db.UniqueIdentifier
+  updatedBy        String?   @db.UniqueIdentifier
+  createdAt        DateTime? @db.DateTime2
+  updatedAt        DateTime? @db.DateTime2
+
+  // Table Name
+  @@map("Invitations")
 }
