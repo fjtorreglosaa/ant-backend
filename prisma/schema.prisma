@@ -251,6 +251,8 @@ model ComponentChange {
   document                 String?   @db.NVarChar(MAX)
   image                    String?   @db.NVarChar(MAX)
   statusId                 String?   @db.UniqueIdentifier
+  approvalRequired         Boolean?  @db.Bit
+  approvedBy               String?   @db.UniqueIdentifier
   createdBy                String?   @db.UniqueIdentifier
   updatedBy                String?   @db.UniqueIdentifier
   createdAt                DateTime? @db.DateTime2
