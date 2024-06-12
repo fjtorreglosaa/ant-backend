@@ -300,6 +300,8 @@ model User {
   // Relationships
   profile      Profile?         @relation(fields: [profileId], references: [id])
   dependencies UserDependency[] @relation
+  groups       UserGroup[]      @relation
+  permissions  UserPermission[] @relation
 
   // Table Name
   @@map("Users")
@@ -394,6 +396,7 @@ model Permission {
 
   // Relationships
   roles RolePermission[] @relation
+  users UserPermission[] @relation
 
   // Table Name
   @@map("Permissions")
@@ -413,4 +416,60 @@ model Invitation {
 
   // Table Name
   @@map("Invitations")
+}
+
+model Group {
+  // Columns
+  id               String    @id @db.UniqueIdentifier
+  name             String?   @db.NVarChar(50)
+  description      String?   @db.NVarChar(MAX)
+  isActive         Boolean?  @db.Bit
+  approvalRequired Boolean?  @db.Bit
+  approvedBy       Boolean?  @db.Bit
+  createdBy        String?   @db.UniqueIdentifier
+  updatedBy        String?   @db.UniqueIdentifier
+  createdAt        DateTime? @db.DateTime2
+  updatedAt        DateTime? @db.DateTime2
+
+  // Relationships
+  users UserGroup[] @relation
+
+  // Table Name
+  @@map("Groups")
+}
+
+model UserGroup {
+  // Columns
+  id        String    @id @db.UniqueIdentifier
+  userId    String?   @db.UniqueIdentifier
+  groupId   String?   @db.UniqueIdentifier
+  createdBy String?   @db.UniqueIdentifier
+  updatedBy String?   @db.UniqueIdentifier
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
+
+  // Relationships
+  user  User?  @relation(fields: [userId], references: [id])
+  group Group? @relation(fields: [groupId], references: [id])
+
+  // Table Name
+  @@map("UserGroups")
+}
+
+model UserPermission {
+  // Columns
+  id           String    @id @db.UniqueIdentifier
+  userId       String?   @db.UniqueIdentifier
+  permissionId String?   @db.UniqueIdentifier
+  createdBy    String?   @db.UniqueIdentifier
+  updatedBy    String?   @db.UniqueIdentifier
+  createdAt    DateTime? @db.DateTime2
+  updatedAt    DateTime? @db.DateTime2
+
+  // Relationships
+  user       User?       @relation(fields: [userId], references: [id])
+  permission Permission? @relation(fields: [permissionId], references: [id])
+
+  // Table Name
+  @@map("UserPermissions")
 }

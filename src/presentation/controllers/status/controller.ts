@@ -8,7 +8,7 @@ export class StatusController {
         private readonly statusService : StatusService
     ) { }
 
-    // POST: http://localhost:3000/api/statuses
+    //* POST: http://localhost:3000/api/statuses
     createStatus = async ( req: Request, res: Response ) => {
 
         const [ error, createStatusDto ] = CreateStatusDto.create( req.body );
