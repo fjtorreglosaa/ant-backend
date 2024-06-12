@@ -11,4 +11,4 @@ services:
     volumes:
       - ./sqlserverdata:/var/opt/mssql
     ports:
-      - 1435:1433
+      - 1434:1433
