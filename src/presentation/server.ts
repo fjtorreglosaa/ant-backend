@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import { errorHandler } from './middlewares';
 
 interface Options {
     port: number,
@@ -29,8 +30,14 @@ export class Server {
         this.app.use( express.json() ); // raw
         this.app.use( express.urlencoded({ extended: true }) ); // x-www-form-urlencoded
 
+        // Static files
+        //this.app.use(express.static(this.publicPath));
+
         // Routes
         this.app.use( this.routes );
+
+        // Error Handling Middleware
+        //this.app.use(errorHandler);
 
         // Application
         this.serverListener = this.app.listen( this.port, () => {
