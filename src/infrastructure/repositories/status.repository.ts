@@ -14,13 +14,17 @@ export class StatusRepository extends BaseRepository<StatusEntity> implements IS
 
     async getStatusByName( name: string ): Promise<StatusEntity | null> {
         
-        const status = this.model.findFirst({
+        const status = await this.model.findFirst({
             where: {
                 name: name
             } 
         });
+
+        if (!status) {
+            return null;
+        }
         
-        return status ? StatusEntity.fromObject(status) : null;
+        return StatusEntity.fromObject(status);
 
     }
 }

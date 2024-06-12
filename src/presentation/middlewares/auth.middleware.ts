@@ -21,7 +21,7 @@ export class AuthMiddleware {
             const payload = await JwtGenerator.validateToken<{ id: string, roleId: string }>( token );
             if( !payload ) return res.status( 401 ).json({ error: 'Invalid token' });
 
-            const user = userRepository.findById( payload.id ); 
+            const user = await userRepository.findById( payload.id ); 
             if( !user ) return res.status(401).json({ error: 'Invalid user' });
 
             const role = roleRepository.findById( payload.roleId );

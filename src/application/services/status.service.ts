@@ -8,12 +8,16 @@ export class StatusService {
 
     async createStatus( createStatusDto: CreateStatusDto, user: UserEntity ) {
 
-        try {
+        const statusExists = await this.statusRepository.getStatusByName( createStatusDto.name );
+        if( statusExists ) throw CustomError.badRequest( 'Status already exists' );
 
-            const statusExists = await this.statusRepository.getStatusByName( createStatusDto.name );
-            if( statusExists ) throw CustomError.badRequest( 'Category already exists' );
+        try {
     
-            const criteria = { id: UUID(), createdBy: user.id, ...createStatusDto };
+            const criteria = { 
+                id: UUID(), 
+                createdBy: user.id, 
+                ...createStatusDto 
+            };
             const statusToCreate = StatusEntity.fromObject( criteria );
             const result = await this.statusRepository.create( statusToCreate );
 

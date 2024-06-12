@@ -59,17 +59,17 @@ export class UserService {
         try {
 
             const user = await this.userRepository.getUserByEmail( loginUserDto.email );
-            if( !user ) throw CustomError.badRequest('Email not exists');
+            if( user ) throw CustomError.badRequest('Email not exists');
+            if( user!.isActive === false ) throw CustomError.badRequest('Email not exists');
     
-            const hasMatch = encrypter.compare( loginUserDto.password, user.password! );
+            const hasMatch = encrypter.compare( loginUserDto.password, user!.password! );
             if ( !hasMatch ) throw CustomError.badRequest('Password is not valid');
     
-            const { password, ...data } = UserEntity.fromObject( user );
-            const token = await JwtGenerator.generateToken({ id: data.id, email: data.email });
+            const { password, ...data } = UserEntity.fromObject( user! );
+            const token = await JwtGenerator.generateToken( data );
             if ( !token ) throw CustomError.internalServer('Error while creating JWT');
     
             return {
-                user: data,
                 token: token
             }
 
