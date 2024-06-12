@@ -4,7 +4,7 @@ export class LoginUserDto {
 
     constructor(
         public email: string,
-        public password: string
+        public password: string,
     ) {}
 
     static create( object: { [key: string]: any }) : [ string?, LoginUserDto? ] {

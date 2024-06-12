@@ -284,16 +284,16 @@ model UserDependency {
 
 model User {
   // Columns
-  id               String    @id @db.UniqueIdentifier
-  email            String?   @db.NVarChar(100)
-  password         String?   @db.NVarChar(MAX)
-  isActive         Boolean?  @db.Bit
-  profileId        String?   @db.UniqueIdentifier
-  userDependencyId String?   @db.UniqueIdentifier
-  createdBy        String?   @db.UniqueIdentifier
-  updatedBy        String?   @db.UniqueIdentifier
-  createdAt        DateTime? @db.DateTime2
-  updatedAt        DateTime? @db.DateTime2
+  id           String    @id @db.UniqueIdentifier
+  email        String?   @db.NVarChar(100)
+  password     String?   @db.NVarChar(MAX)
+  isActive     Boolean?  @db.Bit
+  profileId    String?   @db.UniqueIdentifier
+  dependencyId String?   @db.UniqueIdentifier
+  createdBy    String?   @db.UniqueIdentifier
+  updatedBy    String?   @db.UniqueIdentifier
+  createdAt    DateTime? @db.DateTime2
+  updatedAt    DateTime? @db.DateTime2
 
   // Relationships
   profile      Profile?         @relation(fields: [profileId], references: [id])
@@ -307,10 +307,10 @@ model Profile {
   // Columns
   id          String    @id @db.UniqueIdentifier
   name        String?   @db.NVarChar(50)
-  GroupId     String?   @db.UniqueIdentifier
+  groupId     String?   @db.UniqueIdentifier
   isActive    Boolean?  @db.Bit
-  Photo       String?   @db.NVarChar(MAX)
-  Phone       String?   @db.NVarChar(50)
+  photo       String?   @db.NVarChar(MAX)
+  phone       String?   @db.NVarChar(50)
   preferences String?   @db.NVarChar(MAX)
   createdBy   String?   @db.UniqueIdentifier
   updatedBy   String?   @db.UniqueIdentifier

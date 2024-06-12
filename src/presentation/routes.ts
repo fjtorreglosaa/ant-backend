@@ -10,11 +10,10 @@ export class AppRoutes {
         const router = Router();
 
         // Middlewares
-        //router.use( AuthMiddleware.validateJWT );
     
         // Controllers
-        router.use('/api/statuses', StatusRoutes.routes(container));
         router.use('/api/users', UserRoutes.routes(container));
+        router.use('/api/statuses', [ AuthMiddleware.validateJWT ], StatusRoutes.routes(container));
     
         return router;
         
