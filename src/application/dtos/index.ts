@@ -5,6 +5,11 @@ export * from './shared/pagination.dto';
 export * from './shared/searchedTerm.dto';
 export * from './shared/filter.dto';
 
+// Dependency Dtos
+export * from './dependency/create-dependency.dto';
+export * from './dependency/get-dependency.dto';
+export * from './dependency/update-dependency.dto';
+
 // User Dtos
 export * from './user/create-user.dto';
 export * from './user/login-user.dto';

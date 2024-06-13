@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { container } from "./dependency-container.plugin";
-import { ProfileRepository, RoleRepository, StatusRepository, UserRepository } from "../../infrastructure";
-import { StatusService, UserService } from "../../application";
-import { StatusController, UserController } from "../../presentation/controllers";
+import { DependencyRepository, ProfileRepository, RoleRepository, StatusRepository, UserDependencyRepository, UserRepository } from "../../infrastructure";
+import { DependencyService, StatusService, UserDependencyService, UserService } from "../../application";
+import { StatusController, UserController } from "../../presentation";
 
 export class DependencyRegistrar {
 
@@ -16,9 +16,13 @@ export class DependencyRegistrar {
     const userRepository = new UserRepository(prisma);
     const profileRepository = new ProfileRepository(prisma);
     const roleRepository = new RoleRepository(prisma);
+    const userDependencyRepository = new UserDependencyRepository(prisma);
+    const dependencyRepository = new DependencyRepository(prisma);
 
     //* Services declarations
     const statusService = new StatusService(statusRepository);
+    const dependencyService = new DependencyService(dependencyRepository);
+    const userDependencyService = new UserDependencyService(userDependencyRepository);
     const userService = new UserService(userRepository, profileRepository);
 
     //* Controller declarations
@@ -33,10 +37,14 @@ export class DependencyRegistrar {
     container.register('UserRepository', userRepository);
     container.register('ProfileRepository', profileRepository);
     container.register('RoleRepository', roleRepository);
+    container.register('UserDependencyRepository', userDependencyRepository);
+    container.register('DependencyRepository', dependencyRepository);
 
     //* Services register
     container.register('StatusService', statusService);
     container.register('UserService', userService);
+    container.register('DependencyService', dependencyService);
+    container.register('UserDependencyService', userDependencyService);
 
     //* Controllers register
     container.register('StatusController', statusController);

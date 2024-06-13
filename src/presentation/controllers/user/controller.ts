@@ -79,5 +79,5 @@ export class UserController {
             .then( user => res.status(200).json( user ))
             .catch( error => ErrorHandler.handleError( error, res ));
     }
-
+    
 }

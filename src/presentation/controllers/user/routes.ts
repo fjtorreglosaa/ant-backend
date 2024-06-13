@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { DependencyContainer } from '../../../config/plugins';
 import { UserController } from './controller';
 
-
 export class UserRoutes {
     
     static routes( container: DependencyContainer ): Router {
@@ -22,6 +21,5 @@ export class UserRoutes {
         return router;
 
     }
-    
+   
 }
-  

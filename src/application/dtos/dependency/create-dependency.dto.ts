@@ -1,0 +1,6 @@
+export class CreateDependencyDto {
+
+    constructor(
+
+    ){ }
+}
