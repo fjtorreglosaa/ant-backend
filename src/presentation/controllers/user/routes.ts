@@ -12,8 +12,9 @@ export class UserRoutes {
         const userController = container.resolve<UserController>('UserController');
 
         // Routes
-        router.get('/byterm', userController.getUsersBySearchedTerm );
+        router.get('/:id', userController.getUserById );
         router.get('/', userController.getAllUsers );
+        router.get('/byterm', userController.getUsersBySearchedTerm );
         router.post('/signup', userController.createUser );
         router.post('/signin', userController.loginUser );
         router.put('/', userController.updateUser );

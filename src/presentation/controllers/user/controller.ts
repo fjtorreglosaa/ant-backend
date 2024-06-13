@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ErrorHandler } from "../../../common";
-import { CreateUserDto, FilterDto, LoginUserDto, PaginationDto, SearchedTermDto, UpdateUserDto, UserService } from "../../../application";
+import { CreateUserDto, FilterDto, LoginUserDto, PaginationDto, SearchedTermDto, UpdateUserDto } from "../../../application";
 import { IUserService } from "../../../application/services/contracts";
 
 export class UserController {
@@ -67,6 +67,15 @@ export class UserController {
         if( paginationError ) return res.status( 400 ).json({ paginationError });
 
         this.userService.getUserAllUsers({ pagination: paginationDto } as FilterDto )
+            .then( user => res.status(200).json( user ))
+            .catch( error => ErrorHandler.handleError( error, res ));
+    }
+
+    //* GET: http://localhost:3000/api/users/{id}
+    getUserById = ( req: Request, res: Response ) => {
+        const userId = req.params.id;
+
+        this.userService.getUserById( userId )
             .then( user => res.status(200).json( user ))
             .catch( error => ErrorHandler.handleError( error, res ));
     }
