@@ -9,7 +9,7 @@ export class StatusController {
     ) { }
 
     //* POST: http://localhost:3000/api/statuses
-    createStatus = async ( req: Request, res: Response ) => {
+    createStatus = ( req: Request, res: Response ) => {
 
         const [ error, createStatusDto ] = CreateStatusDto.create( req.body );
         if( error ) return res.status( 400 ).json({ error });

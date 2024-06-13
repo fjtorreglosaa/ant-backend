@@ -1,7 +1,5 @@
 // Dtos
-export * from './dtos/status/create-status.dto';
-export * from './dtos/user/login-user.dto';
-export * from './dtos/user/create-user.dto';
+export * from './dtos'
 
 // Services
 export * from './services/status.service';
