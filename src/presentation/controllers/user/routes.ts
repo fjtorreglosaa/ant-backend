@@ -13,6 +13,7 @@ export class UserRoutes {
 
         // Routes
         router.get('/byterm', userController.getUsersBySearchedTerm );
+        router.get('/', userController.getAllUsers );
         router.post('/signup', userController.createUser );
         router.post('/signin', userController.loginUser );
         router.put('/', userController.updateUser );

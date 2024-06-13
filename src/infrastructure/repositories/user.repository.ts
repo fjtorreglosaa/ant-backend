@@ -12,7 +12,7 @@ export class UserRepository extends BaseRepository<UserEntity> implements IUserR
         return this.prisma.user;
     }
 
-    async getUserByEmail( email: string ) : Promise<UserEntity | null> {
+    async findUserByEmail( email: string ) : Promise<UserEntity | null> {
 
         const user = await this.model.findFirst({
             where:{
@@ -25,10 +25,9 @@ export class UserRepository extends BaseRepository<UserEntity> implements IUserR
         }
 
         return UserEntity.fromObject( user );
-
     }
 
-    async findUsersByEmail(term: string, page: number = 1, limit: number = 10): Promise<UserEntity[]> {
+    async findUsersByEmail(term: string, page: number = 1, limit: number = 10): Promise<UserEntity[] | null> {
 
         const lowerTerm = term.toLowerCase();
         const users = await this.model.findMany({
@@ -41,11 +40,12 @@ export class UserRepository extends BaseRepository<UserEntity> implements IUserR
             take: limit
         });
 
-        return users.map(user => UserEntity.fromObject(user));
+        if( users.length === 0 ) return null;
 
+        return users.map(user => UserEntity.fromObject(user));
     }
 
-    async findUsersByProfileName(term: string, page: number = 1, limit: number = 10): Promise<UserEntity[]> {
+    async findUsersByProfileName(term: string, page: number = 1, limit: number = 10): Promise<UserEntity[] | null> {
 
         const upperTerm = term.toUpperCase();
         const users = await this.model.findMany({
@@ -63,11 +63,12 @@ export class UserRepository extends BaseRepository<UserEntity> implements IUserR
             take: limit
         });
 
-        return users.map(user => UserEntity.fromObject(user));
+        if( users.length === 0 ) return null;
 
+        return users.map(user => UserEntity.fromObject(user));
     }
 
-    async findUsersByIds(ids: string[], page: number = 1, limit: number = 10): Promise<UserEntity[]> {
+    async findUsersByIds(ids: string[], page: number = 1, limit: number = 10): Promise<UserEntity[] | null> {
         const users = await this.model.findMany({
             where: {
                 id: {
@@ -78,7 +79,22 @@ export class UserRepository extends BaseRepository<UserEntity> implements IUserR
             take: limit
         });
 
-        return users.map(user => UserEntity.fromObject(user));
+        if( users.length === 0 ) return null;
 
+        return users.map(user => UserEntity.fromObject(user));
+    }
+
+    async findAllUsers(page: number = 1, limit: number = 10): Promise<UserEntity[] | null> {
+        const users = await this.model.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+            include: {
+                profile: true
+            }
+        });
+
+        if( users.length === 0 ) return null;
+
+        return users.map(user => UserEntity.fromObject(user));
     }
 }

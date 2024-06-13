@@ -1,43 +1,82 @@
-import { CustomError, IProfileRepository, IUserRepository, ProfileEntity, UserEntity } from "../../domain";
 import { JwtGenerator, UUID, encrypter } from "../../config/plugins";
-import { CreateProfileDto, CreateUserDto, GetUserDto, LoginUserDto, PaginationDto, SearchedTermDto, UpdateUserDto } from "../dtos";
+import { CustomError, IProfileRepository, IUserRepository, ProfileEntity, UserEntity } from "../../domain";
+import { CreateProfileDto, CreateUserDto, FilterDto, GetUserDto, LoginUserDto, UpdateUserDto } from "../dtos";
+import { IUserService } from "./contracts";
 
-export class UserService {
+export class UserService implements IUserService {
  
     constructor( 
         private readonly userRepository: IUserRepository,
         private readonly profileRepository: IProfileRepository
     ) { }
 
-    private async getUserByEmail( email: string ) : Promise<UserEntity | null> {
-        const user = await this.userRepository.getUserByEmail( email );
-        return user;
+    async getUserByEmail( email: string ) : Promise<UserEntity | null> {
+        try {
+            const user = await this.userRepository.findUserByEmail( email );
+            if ( !user )  return null;
+
+            return user;
+        }
+        catch ( error ) {
+            throw CustomError.internalServer( `Unexpected error on 'UserService.getUserByEmail'. ${ error }` );
+        }
     }
 
-    async getUserById() : Promise<GetUserDto | null> {
-        return null;
+    async getUserById( id: string ) : Promise<GetUserDto | null> {
+        try {
+            const user = await this.userRepository.findById( id );
+            if ( !user )  return null;
+    
+            return GetUserDto.fromObject( user );
+        }
+        catch ( error ) { 
+            throw CustomError.internalServer( `Unexpected error on 'UserService.getUserById'. ${ error }` );
+        }
     }
 
-    async getUserAllUsers() : Promise<GetUserDto[] | null> {
-        return null;
+    async getUserAllUsers( filter: FilterDto ) : Promise<GetUserDto[] | null> {
+        try {
+            const { page, limit } = filter.pagination;
+            const users = await this.userRepository.findAllUsers( page, limit );
+            if ( !users )  return null;
+
+            const result : GetUserDto[] = [];
+
+            users.forEach( user => {
+                result.push( GetUserDto.fromObject( user ));    
+            });
+    
+            return result;
+        }
+        catch ( error ) { 
+            throw CustomError.internalServer( `Unexpected error on 'UserService.getUserAllUsers'. ${ error }` );
+        }
     }
 
-    async getUsersBySearchedTerm( term: SearchedTermDto, paginationDto: PaginationDto ) : Promise<GetUserDto[] | null> {
-        
-        const { page, limit } = paginationDto;
+    async getUsersByProfileName( filter: FilterDto ) : Promise<GetUserDto[] | null> {
+        const { page, limit } = filter.pagination;
 
         try {
-            
-            return null;
+            const users = await this.userRepository.findUsersByProfileName( filter.searchedTerm!.term, page, limit );
 
+            if ( users != null ){
+                const result : GetUserDto[] = [];
+
+                users.forEach(user => {
+                    result.push(GetUserDto.fromObject(user));
+                });
+
+                return result;
+            }
+
+            return null;
         }
         catch (error){
-            throw CustomError.internalServer( 'Internal server error' );
+            throw CustomError.internalServer( `Unexpected error on 'UserService.getUsersByProfileName'. ${ error }` );
         }
     }
 
-    async registerUser( createUserDto: CreateUserDto, loggedUser: UserEntity | null = null ) : Promise<Boolean> {
-
+    async createUser( createUserDto: CreateUserDto, loggedUser: UserEntity | null = null ) : Promise<Boolean> {
         const userExists = await this.getUserByEmail( createUserDto.email );
         if( userExists ) throw CustomError.badRequest( `User with email ${ createUserDto.email } already exists.` );
 
@@ -77,12 +116,11 @@ export class UserService {
             return profileCreated && userCreated;
         }
         catch ( error ) {
-            throw CustomError.internalServer(`${ error }`);
+            throw CustomError.internalServer( `Unexpected error on 'UserService.createUser'. ${ error }` );
         }
     }
 
     async loginUser( loginUserDto: LoginUserDto ) : Promise<any> {
-
         const user = await this.getUserByEmail( loginUserDto.email );
         if( !user ) throw CustomError.badRequest('Email not exists');
 
@@ -99,12 +137,11 @@ export class UserService {
             }
         }
         catch ( error ) {
-            throw CustomError.internalServer(`${ error }`);
+            throw CustomError.internalServer( `Unexpected error on 'UserService.loginUser'. ${ error }` );
         }
     }
 
     async updateUser( updateUserDto: UpdateUserDto, reqUser: UserEntity ) : Promise<Boolean> {
-
         const user = await this.getUserByEmail( updateUserDto.email );
         if( !user ) throw CustomError.badRequest('Email not exists');
 
@@ -142,7 +179,19 @@ export class UserService {
             return profileUpdated && userUpdated;
         }
         catch ( error ) {
-            throw CustomError.internalServer(`${ error }`);
+            throw CustomError.internalServer( `Unexpected error on 'UserService.updateUser'. ${ error }` );
+        }
+    }
+
+    async deleteUser( userId: string ): Promise<Boolean> {
+        try {
+            const userToDelete = await this.userRepository.findById( userId );
+            if( !userToDelete ) throw CustomError.badRequest( `User with ${ userId } does not exist` );
+            
+            return await this.userRepository.delete( userToDelete.id );
+        }
+        catch ( error ) {
+            throw CustomError.internalServer( `Unexpected error on 'UserService.deleteUser'. ${ error }` );
         }
     }
 }
