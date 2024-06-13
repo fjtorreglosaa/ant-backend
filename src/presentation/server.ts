@@ -1,5 +1,4 @@
 import express, { Router } from 'express';
-import { errorHandler } from './middlewares';
 
 interface Options {
     port: number,

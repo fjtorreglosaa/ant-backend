@@ -10,7 +10,7 @@ export class UserRoutes {
 
         const userController = container.resolve<UserController>('UserController');
 
-        // Routes
+        // Endpoints
         router.get('/:id', userController.getUserById );
         router.get('/', userController.getAllUsers );
         router.get('/byterm', userController.getUsersBySearchedTerm );

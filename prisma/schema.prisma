@@ -9,7 +9,7 @@ datasource db {
 
 model Subject {
   // Columns
-  id                 String    @id @map("Id") @db.UniqueIdentifier
+  id                 String    @id @db.UniqueIdentifier
   name               String?   @db.VarChar(MAX)
   tag                String?   @db.VarChar(50)
   internalCode       String?   @db.VarChar(50)
