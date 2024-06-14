@@ -76,6 +76,10 @@ model DependencyType {
   id          String  @id @db.UniqueIdentifier
   name        String? @db.NVarChar(50)
   description String? @db.NVarChar(125)
+  createdBy String?   @db.UniqueIdentifier
+  updatedBy String?   @db.UniqueIdentifier
+  createdAt DateTime? @db.DateTime2
+  updatedAt DateTime? @db.DateTime2
 
   // Relationships
   dependencies Dependency[] @relation
