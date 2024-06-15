@@ -1,13 +1,14 @@
 import { UUID } from "../../config/plugins";
 import { CustomError, DependencyEntity, IDependencyRepository, IDependencyTypeRepository, UserEntity } from "../../domain";
 import { CreateDependencyDto, GetDependencyDto, UpdateDependencyDto } from "../dtos";
-import { IDependencyService } from "./contracts";
+import { IDependencyService, IUserDependencyService } from "./contracts";
 
 export class DependencyService implements IDependencyService {
 
     constructor(
-        private readonly dependencyRepository : IDependencyRepository,
-        private readonly dependencyTypeRepository: IDependencyTypeRepository
+        private readonly dependencyRepository: IDependencyRepository,
+        private readonly dependencyTypeRepository: IDependencyTypeRepository, 
+        private readonly userDependencyService: IUserDependencyService 
     ) { }
 
     async createDependency( createDependencyDto: CreateDependencyDto, loggedUser: UserEntity ): Promise<Boolean> {
@@ -38,30 +39,73 @@ export class DependencyService implements IDependencyService {
         }
     }
 
-
-    async updateDependencies( updateDependencyDto: UpdateDependencyDto ): Promise<Boolean> {
+    async updateDependencies( updateDependencyDto: UpdateDependencyDto, loggedUser: UserEntity  ): Promise<Boolean> {
         try {
+            const { id, name, typeId, parentId } = updateDependencyDto;
 
+            if( !parentId ) {
+                const badRequestMessage = `Cannot create the dependency, provided parentId ${ parentId } does not exist.`;
+                return false;
+            }
+
+            const dependencyType = await this.dependencyTypeRepository.findById( typeId );
+            if( !dependencyType ) {
+                const badRequestMessage = `Cannot create the dependency, provided dependencyType ${ typeId } does not exist.`;
+                return false;
+            }
+
+            const entity = DependencyEntity.fromObject({
+                id,
+                name,
+                typeId,
+                parentId,
+                modifiedBy: loggedUser.id,
+                updatedAt: new Date().toISOString()
+            });
+
+            const result = await this.dependencyRepository.update( id, entity );
+
+            return result;
         }
         catch ( error ) {
-            
+            throw CustomError.internalServer( `Unexpected error on 'DependencyService.updateDependencies'. ${ error }` );
         }
-        return false;
     }
 
     async removeDependencies( id: string ): Promise<Boolean> {
+        try {
+            const dependency = await this.dependencyRepository.findById( id );
+            if ( dependency ) {
+                const badRequestMessage = `Cannot create the dependency, provided parentId ${ id } does not exist.`;
+                return false;
+            }
 
-        return false;
+            const userDependencies = null;
+            const result = this.dependencyRepository.delete( id );
+
+            return result;
+        }
+        catch ( error ) {
+            throw CustomError.internalServer( `Unexpected error on 'DependencyService.removeDependencies'. ${ error }` );
+        }
     }
 
     async getChildDependencies(): Promise<GetDependencyDto[] | null> {
-
-        return null;
+        try {
+            return null;
+        }
+        catch ( error ) {
+            throw CustomError.internalServer( `Unexpected error on 'DependencyService.getChildDependencies'. ${ error }` );
+        }
     }
 
     async getParentDependency(): Promise<GetDependencyDto[] | null> {
-
-        return null;
+        try {
+            return null;
+        }
+        catch ( error ) {
+            throw CustomError.internalServer( `Unexpected error on 'DependencyService.getParentDependency'. ${ error }` );
+        }
     }
 
 }

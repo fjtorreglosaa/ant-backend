@@ -9,6 +9,7 @@ export * from './shared/filter.dto';
 export * from './dependency/create-dependency.dto';
 export * from './dependency/get-dependency.dto';
 export * from './dependency/update-dependency.dto';
+export * from './user-dependency/get-user-dependency.dto';
 
 // User Dtos
 export * from './user/create-user.dto';
