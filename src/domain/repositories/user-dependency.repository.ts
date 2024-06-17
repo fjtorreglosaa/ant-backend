@@ -5,5 +5,7 @@ export interface IUserDependencyRepository extends IBaseRepository<UserDependenc
 {
     createUserDependencies( userDependencies: UserDependencyEntity[] ): Promise<Boolean>;
     findUserDependenciesByUserIds(ids: string[], page: number, limit: number): Promise<UserDependencyEntity[] | null>;
+    findUserDependenciesByUserIdsNoPaginated( ids: string[] ): Promise<UserDependencyEntity[] | null>;
     findCountOfUserDependenciesByUserIds( ids: string[] ): Promise<number>;
+    removeUserDependenciesByIds( dependencyIds: string[] ): Promise<boolean>;
 }

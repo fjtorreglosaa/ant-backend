@@ -47,15 +47,37 @@ export class UserDependencyService implements IUserDependencyService {
     }
 
     async updateUserDependencies( updateUserDependencyDtos: UpdateUserDependencyDto[], loggedUser: UserEntity  ): Promise<Boolean> {
-        try{
-            updateUserDependencyDtos.forEach( async dto => {
+        try {
+            const entities: UserDependencyEntity[] = [];
+            const userIds = updateUserDependencyDtos.map( dto => dto.userId );
+            const currentUserDependencies = await this.userDependencyRepository.findUserDependenciesByUserIdsNoPaginated( userIds );
+            
+            if ( !currentUserDependencies ) return false;
+            
+            const userDependenciesIds = currentUserDependencies.map( x => x.dependencyId! );
+            const removedUserDependencies = await this.userDependencyRepository.removeUserDependenciesByIds( userDependenciesIds );
+            if ( !removedUserDependencies ) return false;
+
+            updateUserDependencyDtos.forEach(dto => {
                 const { userId, dependencyIds } = dto;
-                //! TODO: Revisar las dependencias que el usuario tiene actualmente
-                //! TODO: Remover las dependencias que el usuario tiene actualmente y que no estan en el request
-                //! TODO: Agregar las dependencias que vienen en el request y que no tiene el usuario actualmente
+                dependencyIds.forEach( userDependencyId => {
+                    const entity = UserDependencyEntity.fromObject({
+                        id: UUID(),
+                        userId: userId,
+                        userDependencyId: userDependencyId,
+                        createdAt: new Date().toISOString(),
+                        createdBy: loggedUser.id
+                    })
+
+                    entities.push( entity );
+                })
             });
 
-            return true;
+            if( !entities ) return false;
+
+            const createdUserDependencies = await this.userDependencyRepository.createUserDependencies( entities );
+
+            return createdUserDependencies;
         }
         catch ( error ) {
             throw CustomError.internalServer( `Unexpected error on 'UserDependencyService.updateUserDependencies'. ${ error }` );
@@ -64,15 +86,8 @@ export class UserDependencyService implements IUserDependencyService {
 
     async removeUserDependencies( ids: string[] ): Promise<Boolean> {
         try{
-            const numberOfUserDependencies = await this.userDependencyRepository.findCountOfUserDependenciesByUserIds( ids )
-
-            if( ids.length !== numberOfUserDependencies ) return false;
-
-            ids.forEach( async id => {
-                await this.userDependencyRepository.delete( id );
-            });
-
-            return true;
+            const result = await this.userDependencyRepository.removeUserDependenciesByIds( ids );
+            return result;
         }
         catch ( error ) {
             throw CustomError.internalServer( `Unexpected error on 'UserDependencyService.removeUserDependencies'. ${ error }` );
@@ -102,5 +117,4 @@ export class UserDependencyService implements IUserDependencyService {
             throw CustomError.internalServer( `Unexpected error on 'UserDependencyService.getUserDependenciesByIds'. ${ error }` );
         }
     }
-
 }
