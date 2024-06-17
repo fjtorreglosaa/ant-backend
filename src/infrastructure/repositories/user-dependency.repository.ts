@@ -12,6 +12,16 @@ export class UserDependencyRepository extends BaseRepository<UserDependencyEntit
         return this.prisma.userDependency;
     }
 
+    async createUserDependencies( userDependencies: UserDependencyEntity[] ): Promise<Boolean> {      
+        userDependencies.forEach( async entity => {
+            await this.model.create({
+                data: entity
+            })
+        });
+
+        return true;
+    }
+
     async findUserDependenciesByUserIds(ids: string[], page: number = 1, limit: number = 10): Promise<UserDependencyEntity[] | null> {
         const users = await this.model.findMany({
             where: {
