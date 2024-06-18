@@ -6,6 +6,6 @@ export interface IDependencyService {
     createDependency( createDependencyDto: CreateDependencyDto, loggedUser: UserEntity ): Promise<Boolean>;
     updateDependencies( updateDependencyDto: UpdateDependencyDto, loggedUser: UserEntity ): Promise<Boolean>;
     removeDependencies( id: string ): Promise<Boolean>;
-    getChildDependencies(): Promise<GetDependencyDto[] | null>;
-    getParentDependency(): Promise<GetDependencyDto[] | null>;
+    getChildDependencies( id: string ): Promise<GetDependencyDto[] | null>;
+    getParentDependency( id: string ): Promise<GetDependencyDto[] | null>;
 }

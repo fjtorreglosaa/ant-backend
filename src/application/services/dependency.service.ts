@@ -90,19 +90,38 @@ export class DependencyService implements IDependencyService {
         }
     }
 
-    async getChildDependencies(): Promise<GetDependencyDto[] | null> {
+    async getChildDependencies( id: string ): Promise<GetDependencyDto[] | null> {
         try {
+            const result: GetDependencyDto[] = [];
+            const childs = await this.dependencyRepository.getChildDependencies( id );
+            if ( !childs ) return [];
 
-            
+            childs.forEach(child => {
 
-            return null;
+                const data = GetDependencyDto.create({ 
+                    id: child.id, 
+                    name: child.name, 
+                    typeId: child.typeId, 
+                    parentId: child.parentId, 
+                    createdBy: child.createdBy, 
+                    updatedBy: child.updatedBy, 
+                    createdAt: child.createdAt, 
+                    updatedAt: child.updatedAt 
+                })[1];
+
+                result.push( data! );
+            });
+
+            if ( result.length === 0 ) return null;
+
+            return result;
         }
         catch ( error ) {
             throw CustomError.internalServer( `Unexpected error on 'DependencyService.getChildDependencies'. ${ error }` );
         }
     }
 
-    async getParentDependency(): Promise<GetDependencyDto[] | null> {
+    async getParentDependency( id: string ): Promise<GetDependencyDto[] | null> {
         try {
             return null;
         }

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { BaseRepository } from './base.repository';
-import { DependencyEntity, IDependencyRepository } from '../../domain';
+import { CustomError, DependencyEntity, IDependencyRepository } from '../../domain';
 
 export class DependencyRepository extends BaseRepository<DependencyEntity> implements IDependencyRepository {
 
@@ -12,7 +12,7 @@ export class DependencyRepository extends BaseRepository<DependencyEntity> imple
         return this.prisma.dependency;
     }
 
-    async getChildDependencies( dependencyId: string ): Promise<DependencyEntity[] | null | undefined>{
+    async getChildDependencies( dependencyId: string ): Promise<DependencyEntity[] | null>{
         try {
 
             const childDependencies = await this.model.findMany({
@@ -26,7 +26,7 @@ export class DependencyRepository extends BaseRepository<DependencyEntity> imple
             return childDependencies.map(child => DependencyEntity.fromObject(child));
         }
         catch ( error ) {
-
+            throw CustomError.internalServer(`Unexpected error on 'DependencyRepository.getChildDependencies'. ${ error }`);
         }
     }
 }
