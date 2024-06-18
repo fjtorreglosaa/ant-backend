@@ -7,5 +7,5 @@ export interface IDependencyService {
     updateDependencies( updateDependencyDto: UpdateDependencyDto, loggedUser: UserEntity ): Promise<Boolean>;
     removeDependencies( id: string ): Promise<Boolean>;
     getChildDependencies( id: string ): Promise<GetDependencyDto[] | null>;
-    getParentDependency( id: string ): Promise<GetDependencyDto[] | null>;
+    getParentDependency( parendId: string ): Promise<GetDependencyDto | null>;
 }

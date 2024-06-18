@@ -14,7 +14,6 @@ export class UpdateUserDto {
     ) {}
 
     static create( object: { [key: string]: any }) : [ string?, UpdateUserDto? ] {
-
         const { name, password, email, groupId, isActive, photo, phone, preferences, dependencyId, profileId } = object;
 
         if ( !name && !password && !email && !groupId && !isActive && !photo && !phone && !preferences && !dependencyId && !profileId ){
@@ -22,7 +21,5 @@ export class UpdateUserDto {
         }
 
         return [ undefined , new UpdateUserDto( name, password, email, groupId, isActive, photo, phone, preferences, dependencyId, profileId )];
-
     }
-
 }

@@ -14,25 +14,25 @@ export class DependencyService implements IDependencyService {
     async createDependency( createDependencyDto: CreateDependencyDto, loggedUser: UserEntity ): Promise<Boolean> {
         try {
             const parentDependency = await this.dependencyRepository.findById( createDependencyDto.parentId );
-                if( !parentDependency ) {
-                    const badRequestMessage = `Cannot create the dependency, provided parentId ${ createDependencyDto.parentId } does not exist.`;
-                    return false;
-                }
+            if( !parentDependency ) {
+                const badRequestMessage = `Cannot create the dependency, provided parentId ${ createDependencyDto.parentId } does not exist.`;
+                return false;
+            }
 
-                const dependencyType = await this.dependencyTypeRepository.findById( createDependencyDto.typeId );
-                if( !dependencyType ) {
-                    const badRequestMessage = `Cannot create the dependency, provided dependencyType ${ createDependencyDto.typeId } does not exist.`;
-                    return false;
-                }
+            const dependencyType = await this.dependencyTypeRepository.findById( createDependencyDto.typeId );
+            if( !dependencyType ) {
+                const badRequestMessage = `Cannot create the dependency, provided dependencyType ${ createDependencyDto.typeId } does not exist.`;
+                return false;
+            }
 
-                const dependency = DependencyEntity.fromObject({ 
-                    id: UUID(),
-                    ...createDependencyDto,
-                    createdBy: loggedUser ? loggedUser.id : null,
-                    createdAt: new Date().toISOString()
-                });
+            const dependency = DependencyEntity.fromObject({ 
+                id: UUID(),
+                ...createDependencyDto,
+                createdBy: loggedUser ? loggedUser.id : null,
+                createdAt: new Date().toISOString()
+            });
 
-                return await this.dependencyRepository.create( dependency );  
+            return await this.dependencyRepository.create( dependency );  
         }
         catch ( error ) {
             throw CustomError.internalServer( `Unexpected error on 'DependencyService.createDependency'. ${ error }` );
@@ -121,13 +121,20 @@ export class DependencyService implements IDependencyService {
         }
     }
 
-    async getParentDependency( id: string ): Promise<GetDependencyDto[] | null> {
+    async getParentDependency( parentId: string ): Promise<GetDependencyDto | null> {
         try {
-            return null;
+            const parentDependency = await this.dependencyRepository.findById( parentId );
+
+            if ( !parentDependency ) return null;
+
+            const result = GetDependencyDto.create( parentDependency! )[1];
+
+            if( !result ) return null;
+
+            return result;
         }
         catch ( error ) {
             throw CustomError.internalServer( `Unexpected error on 'DependencyService.getParentDependency'. ${ error }` );
         }
     }
-
 }
