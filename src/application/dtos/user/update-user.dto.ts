@@ -3,7 +3,6 @@ export class GetUserDto {
     constructor(
         public id: string,
         public name: string,
-        public password: string,
         public email: string,
         public groupId: string,
         public isActive: boolean,
@@ -16,13 +15,13 @@ export class GetUserDto {
 
     static create( object: { [key: string]: any }) : [ string?, GetUserDto? ] {
 
-        const { id, name, password, email, groupId, isActive, photo, phone, preferences, dependencyId, profileId } = object;
+        const { id, name, email, groupId, isActive, photo, phone, preferences, dependencyId, profileId } = object;
 
-        if ( !name && !password && !email && !groupId && !isActive && !photo && !phone && !preferences && !dependencyId && !profileId ){
+        if ( !name && !email && !groupId && !isActive && !photo && !phone && !preferences && !dependencyId && !profileId ){
             return ['Missing properties'];
         }
 
-        return [ undefined , new GetUserDto( id, name, password, email, groupId, isActive, photo, phone, preferences, dependencyId, profileId )];
+        return [ undefined , new GetUserDto( id, name, email, groupId, isActive, photo, phone, preferences, dependencyId, profileId )];
 
     }
 
@@ -31,7 +30,6 @@ export class GetUserDto {
         const user = new GetUserDto( 
             object.id,
             object.name,
-            object.password,
             object.email,
             object.groupId,
             object.isActive,

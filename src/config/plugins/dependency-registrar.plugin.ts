@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { container } from "./dependency-container.plugin";
-import { DependencyRepository, ProfileRepository, RoleRepository, StatusRepository, UserDependencyRepository, UserRepository } from "../../infrastructure";
+import { DependencyRepository, DependencyTypeRepository, ProfileRepository, RoleRepository, StatusRepository, UserDependencyRepository, UserRepository } from "../../infrastructure";
 import { DependencyService, StatusService, UserDependencyService, UserService } from "../../application";
 import { StatusController, UserController } from "../../presentation";
 
@@ -18,11 +18,12 @@ export class DependencyRegistrar {
     const roleRepository = new RoleRepository(prisma);
     const userDependencyRepository = new UserDependencyRepository(prisma);
     const dependencyRepository = new DependencyRepository(prisma);
+    const dependencyTypeRepository = new DependencyTypeRepository(prisma)
 
     //* Services declarations
     const statusService = new StatusService(statusRepository);
-    const dependencyService = new DependencyService(dependencyRepository);
-    const userDependencyService = new UserDependencyService(userDependencyRepository);
+    const userDependencyService = new UserDependencyService(userDependencyRepository, dependencyRepository, userRepository);
+    const dependencyService = new DependencyService(dependencyRepository, dependencyTypeRepository, userDependencyService);
     const userService = new UserService(userRepository, profileRepository);
 
     //* Controller declarations

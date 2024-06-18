@@ -43,7 +43,7 @@ export class UserService implements IUserService {
             const result : GetUserDto[] = [];
 
             users.forEach( user => {
-                result.push( GetUserDto.fromObject( user ));    
+                result.push( GetUserDto.fromObject( user ));
             });
     
             return result;

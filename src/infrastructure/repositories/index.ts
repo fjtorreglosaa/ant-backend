@@ -3,6 +3,7 @@ export * from './component-change.repository';
 export * from './component-parameter.repository';
 export * from './component.repository';
 export * from './dependency.repository';
+export * from './dependency-type.repository';
 export * from './location.repository';
 export * from './manufacturer.repository';
 export * from './profile.repository';

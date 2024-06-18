@@ -4,7 +4,7 @@ BEGIN TRAN;
 
 -- CreateTable
 CREATE TABLE [dbo].[Subjects] (
-    [Id] UNIQUEIDENTIFIER NOT NULL,
+    [id] UNIQUEIDENTIFIER NOT NULL,
     [name] VARCHAR(max),
     [tag] VARCHAR(50),
     [internalCode] VARCHAR(50),
@@ -18,7 +18,7 @@ CREATE TABLE [dbo].[Subjects] (
     [updatedBy] VARCHAR(50),
     [createdAt] DATETIME2,
     [updatedAt] DATETIME2,
-    CONSTRAINT [Subjects_pkey] PRIMARY KEY CLUSTERED ([Id])
+    CONSTRAINT [Subjects_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
 -- CreateTable
@@ -51,6 +51,10 @@ CREATE TABLE [dbo].[DependencyTypes] (
     [id] UNIQUEIDENTIFIER NOT NULL,
     [name] NVARCHAR(50),
     [description] NVARCHAR(125),
+    [createdBy] UNIQUEIDENTIFIER,
+    [updatedBy] UNIQUEIDENTIFIER,
+    [createdAt] DATETIME2,
+    [updatedAt] DATETIME2,
     CONSTRAINT [DependencyTypes_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
