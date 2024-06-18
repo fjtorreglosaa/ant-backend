@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { container } from "./dependency-container.plugin";
 import { DependencyRepository, DependencyTypeRepository, ProfileRepository, RoleRepository, StatusRepository, UserDependencyRepository, UserRepository } from "../../infrastructure";
 import { DependencyService, StatusService, UserDependencyService, UserService } from "../../application";
-import { StatusController, UserController } from "../../presentation";
+import { DependencyController, StatusController, UserController, UserDependencyController } from "../../presentation";
 
 export class DependencyRegistrar {
 
@@ -29,6 +29,8 @@ export class DependencyRegistrar {
     //* Controller declarations
     const statusController = new StatusController(statusService);
     const userController = new UserController(userService);
+    const userDependencyController = new UserDependencyController(userDependencyService);
+    const dependencyController = new DependencyController(dependencyService);
 
     //* Prisma
     container.register('PrismaClient', prisma);
@@ -40,6 +42,7 @@ export class DependencyRegistrar {
     container.register('RoleRepository', roleRepository);
     container.register('UserDependencyRepository', userDependencyRepository);
     container.register('DependencyRepository', dependencyRepository);
+    container.register('DependencyTypeRepository', dependencyTypeRepository);
 
     //* Services register
     container.register('StatusService', statusService);
@@ -50,7 +53,8 @@ export class DependencyRegistrar {
     //* Controllers register
     container.register('StatusController', statusController);
     container.register('UserController', userController);
-
+    container.register('UserDependencyController', userDependencyController);
+    container.register('DependencyController', dependencyController);
   }
 
 }

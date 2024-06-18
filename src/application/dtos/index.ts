@@ -4,6 +4,7 @@ export * from './status/create-status.dto';
 export * from './shared/pagination.dto';
 export * from './shared/searchedTerm.dto';
 export * from './shared/filter.dto';
+export * from './shared/result-model.dto';
 
 // Dependency Dtos
 export * from './dependency/create-dependency.dto';
