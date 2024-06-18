@@ -80,8 +80,8 @@ export class DependencyService implements IDependencyService {
                 return false;
             }
 
-            const userDependencies = null;
-            const result = this.dependencyRepository.delete( id );
+            await this.userDependencyService.removeUserDependencies([ id ]);
+            const result = await this.dependencyRepository.delete( id );
 
             return result;
         }
@@ -92,6 +92,9 @@ export class DependencyService implements IDependencyService {
 
     async getChildDependencies(): Promise<GetDependencyDto[] | null> {
         try {
+
+            
+
             return null;
         }
         catch ( error ) {
