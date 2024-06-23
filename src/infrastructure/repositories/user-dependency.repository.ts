@@ -44,28 +44,39 @@ export class UserDependencyRepository extends BaseRepository<UserDependencyEntit
         }
     }
 
-    async findUserDependenciesByUserIds(ids: string[], page: number = 1, limit: number = 10): Promise<UserDependencyEntity[] | null> {
+    async findUserDependenciesByUserIds(ids: string[], page: number = 1, limit: number = 10): Promise<{ total: number, data: UserDependencyEntity[] } | null> {
         try {
-            const users = await this.model.findMany({
-                where: {
-                    userId: {
-                        in: ids
+            const [total, users] = await Promise.all([
+                this.model.count({
+                    where: {
+                        userId: {
+                            in: ids
+                        }
                     }
-                },
-                skip: (page - 1) * limit,
-                take: limit,
-                orderBy: [
-                    {
-                        userId: 'desc'
-                    }
-                ]
-            });
+                }),
+                this.model.findMany({
+                    where: {
+                        userId: {
+                            in: ids
+                        }
+                    },
+                    skip: (page - 1) * limit,
+                    take: limit,
+                    orderBy: [
+                        {
+                            userId: 'desc'
+                        }
+                    ]
+                })
+            ]);
     
-            if( users.length === 0 ) return null;
+            if (users.length === 0) return null;
     
-            return users.map(user => UserDependencyEntity.fromObject(user));
-        }
-        catch ( error ) {
+            return {
+                total,
+                data: users.map(user => UserDependencyEntity.fromObject(user))
+            };
+        } catch (error) {
             return null;
         }
     }

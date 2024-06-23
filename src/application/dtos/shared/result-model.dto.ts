@@ -30,16 +30,16 @@ export class ResultModel<T> {
 
     // Firmas del método sobrecargado
     static getResultModel<T>(data: T, message?: string): ResultModel<T>;
-    static getResultModel<T>(data: T[], allRecords: number, message?: string, recordsPerPage?: number, page?: number): ResultModel<T[]>;
+    static getResultModel<T>(data: T[], allRecords: number, message?: string, recordsPerPage?: number, page?: number, url?: string): ResultModel<T[]>;
 
     // Implementación del método sobrecargado
-    static getResultModel<T>(data: any, allRecordsOrMessage?: any, messageOrPage?: any, recordsPerPage: number = 5, page: number = 1): ResultModel<any> {
+    static getResultModel<T>(data: any, allRecordsOrMessage?: any, messageOrPage?: any, recordsPerPage: number = 5, page: number = 1, url: string = ''): ResultModel<any> {
         if (Array.isArray(data)) {
             const allRecords = allRecordsOrMessage as number;
             const message = messageOrPage as string || "";
             const pageCount = data.length > 0 ? Math.ceil(allRecords / recordsPerPage) : 0;
-            const previousPage = page > 1 ? `${page - 1}` : null;
-            const nextPage = page < pageCount ? `${page + 1}` : null;
+            const previousPage = page > 1 ? `${ url }?page=${ page - 1 }&limit=${ recordsPerPage }` : null;
+            const nextPage = page < pageCount ? `${ url }?page=${ page + 1 }&limit=${ recordsPerPage }` : null;
             return new ResultModel<T[]>(
                 data,
                 message,

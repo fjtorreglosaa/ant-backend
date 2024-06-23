@@ -1,7 +1,8 @@
 import { CustomError, IDependencyRepository, IUserDependencyRepository, IUserRepository, UserDependencyEntity, UserEntity } from "../../domain";
-import { CreateUserDependencyDto, FilterDto, GetUserDependencyDto, UpdateUserDependencyDto } from "../dtos";
+import { CreateUserDependencyDto, FilterDto, GetUserDependencyDto, ResultModel, UpdateUserDependencyDto } from "../dtos";
 import { IUserDependencyService } from "./contracts";
 import { UUID } from "../../config/plugins";
+import { constants } from "../../common";
 
 export class UserDependencyService implements IUserDependencyService {
 
@@ -94,24 +95,33 @@ export class UserDependencyService implements IUserDependencyService {
         }
     }
 
-    async getUserDependenciesByUserIds( userIds: string[], filterDto: FilterDto ): Promise<GetUserDependencyDto[] | null> {
+    async getUserDependenciesByUserIds( userIds: string[], filterDto: FilterDto ): Promise<ResultModel<GetUserDependencyDto[]> | null> {
         try {
             const { page, limit } = filterDto.pagination;
             const userDependencies = await this.userDependencyRepository.findUserDependenciesByUserIds( userIds, page, limit );
 
             if ( !userDependencies ) return null;
-            
-            if( userDependencies?.length === 0 ) return null;
+            if ( !userDependencies.data ) return null;
+            if( userDependencies.data.length === 0 ) return null;
 
-            const userDependenciesFromDB : GetUserDependencyDto[] = [];
+            const data : GetUserDependencyDto[] = [];
 
-            userDependencies.forEach( userDependency => {
+            userDependencies.data.forEach( userDependency => {
                 let entity = UserDependencyEntity.fromObject( userDependency );
                 let dto = GetUserDependencyDto.create( entity )[1];
-                userDependenciesFromDB.push( dto! );    
+                data.push( dto! );    
             });
 
-            return userDependenciesFromDB;
+            const result = ResultModel.getResultModel( 
+                data, 
+                userDependencies.total, 
+                '', 
+                limit, 
+                page, 
+                `${ constants.apiUrl }/userdependencies` 
+            );
+
+            return result;
         }
         catch ( error ) {
             throw CustomError.internalServer( `Unexpected error on 'UserDependencyService.getUserDependenciesByIds'. ${ error }` );
