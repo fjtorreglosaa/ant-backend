@@ -10,6 +10,24 @@ export class UserController {
     ) { }
 
     //* POST: http://localhost:3000/api/users/signup
+    /**
+     * @openapi
+     * /api/users/signup:
+     *   post:
+     *     tags:
+     *       - Users
+     *     description: Crea un nuevo usuario
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/CreateUserDto'
+     *     responses:
+     *       201:
+     *         description: Usuario creado exitosamente
+     *       400:
+     *         description: Error en la solicitud
+     */
     createUser = ( req: Request, res: Response ) => {
 
         const [ error, createUserDto ] = CreateUserDto.create( req.body );
@@ -21,6 +39,24 @@ export class UserController {
     }
 
     //* POST: http://localhost:3000/api/users/signin
+    /**
+     * @openapi
+     * /api/users/signin:
+     *   post:
+     *     tags:
+     *       - Users
+     *     description: Inicia sesión un usuario
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/LoginUserDto'
+     *     responses:
+     *       200:
+     *         description: Sesión iniciada exitosamente
+     *       400:
+     *         description: Error en la solicitud
+     */
     loginUser = ( req: Request, res: Response ) => {
 
         const [ error, loginUserDto ] = LoginUserDto.create( req.body );
@@ -33,6 +69,26 @@ export class UserController {
     }
 
     //* PUT: http://localhost:3000/api/users
+    /**
+     * @openapi
+     * /api/users:
+     *   put:
+     *     tags:
+     *       - Users
+     *     description: Actualiza un usuario
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/UpdateUserDto'
+     *     responses:
+     *       200:
+     *         description: Usuario actualizado exitosamente
+     *       400:
+     *         description: Error en la solicitud
+     */
     updateUser = ( req: Request, res: Response ) => {
 
         const [ errors, updateUserDto ] = UpdateUserDto.create( req.body );
@@ -45,6 +101,39 @@ export class UserController {
     }
 
     //* GET: http://localhost:3000/api/users/byterm?page=[page]&limit=[limit]
+    /**
+     * @openapi
+     * /api/users/byterm:
+     *   get:
+     *     tags:
+     *       - Users
+     *     description: Obtiene usuarios por término de búsqueda
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: page
+     *         in: query
+     *         required: false
+     *         schema:
+     *           type: integer
+     *           default: 1
+     *       - name: limit
+     *         in: query
+     *         required: false
+     *         schema:
+     *           type: integer
+     *           default: 10
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/SearchedTermDto'
+     *     responses:
+     *       200:
+     *         description: Lista de usuarios
+     *       400:
+     *         description: Error en la solicitud
+     */
     getUsersBySearchedTerm = ( req: Request, res: Response ) => {
         const { page = 1, limit = 10 } = req.query;
 
@@ -60,6 +149,34 @@ export class UserController {
     }
 
     //* GET: http://localhost:3000/api/users?page=[page]&limit=[limit]
+    /**
+     * @openapi
+     * /api/users:
+     *   get:
+     *     tags:
+     *       - Users
+     *     description: Obtiene todos los usuarios
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: page
+     *         in: query
+     *         required: false
+     *         schema:
+     *           type: integer
+     *           default: 1
+     *       - name: limit
+     *         in: query
+     *         required: false
+     *         schema:
+     *           type: integer
+     *           default: 10
+     *     responses:
+     *       200:
+     *         description: Lista de usuarios
+     *       400:
+     *         description: Error en la solicitud
+     */
     getAllUsers = ( req: Request, res: Response ) => {
         const { page = 1, limit = 10 } = req.query;
 
@@ -72,6 +189,27 @@ export class UserController {
     }
 
     //* GET: http://localhost:3000/api/users/{id}
+    /**
+     * @openapi
+     * /api/users/{id}:
+     *   get:
+     *     tags:
+     *       - Users
+     *     description: Obtiene un usuario por ID
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: id
+     *         in: path
+     *         required: true
+     *         schema:
+     *           type: string
+     *     responses:
+     *       200:
+     *         description: Usuario obtenido exitosamente
+     *       400:
+     *         description: Error en la solicitud
+     */
     getUserById = ( req: Request, res: Response ) => {
         const userId = req.params.id;
 

@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import { setupSwagger } from '../config/plugins';
 
 interface Options {
     port: number,
@@ -34,6 +35,9 @@ export class Server {
 
         // Routes
         this.app.use( this.routes );
+
+        // Swagger Setup
+        setupSwagger(this.app);
 
         // Error Handling Middleware
         //this.app.use(errorHandler);
