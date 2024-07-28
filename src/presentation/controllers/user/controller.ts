@@ -100,7 +100,7 @@ export class UserController {
             .catch( error => ErrorHandler.handleError( error, res ));
     }
 
-    //* GET: http://localhost:3000/api/users/byterm?page=[page]&limit=[limit]
+    //* GET: http://localhost:3000/api/users/byterm?term=[term]&page=[page]&limit=[limit]
     /**
      * @openapi
      * /api/users/byterm:
@@ -111,6 +111,11 @@ export class UserController {
      *     security:
      *       - bearerAuth: []
      *     parameters:
+     *       - name: term
+     *         in: query
+     *         required: false
+     *         schema:
+     *           type: string
      *       - name: page
      *         in: query
      *         required: false
@@ -123,24 +128,25 @@ export class UserController {
      *         schema:
      *           type: integer
      *           default: 10
-     *     requestBody:
-     *       content:
-     *         application/json:
-     *           schema:
-     *             $ref: '#/components/schemas/SearchedTermDto'
      *     responses:
      *       200:
      *         description: Lista de usuarios
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/GetUserDto'
      *       400:
      *         description: Error en la solicitud
      */
     getUsersBySearchedTerm = ( req: Request, res: Response ) => {
-        const { page = 1, limit = 10 } = req.query;
+        const { term = '', page = 1, limit = 10 } = req.query;
 
         const [ paginationError, paginationDto ] = PaginationDto.create( +page, +limit );
         if( paginationError ) return res.status( 400 ).json({ paginationError });
 
-        const [ error, searchedTermDto ] = SearchedTermDto.create( req.body );
+        const [ error, searchedTermDto ] = SearchedTermDto.create( term as string );
         if( error ) return res.status( 400 ).json({ error });
 
         this.userService.getUsersByProfileName({ searchedTerm: searchedTermDto, pagination: paginationDto } as FilterDto )

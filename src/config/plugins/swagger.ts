@@ -28,7 +28,7 @@ const swaggerOptions = {
         CreateUserDto: {
           type: 'object',
           properties: {
-            username: {
+            name: {
               type: 'string',
             },
             password: {
@@ -77,12 +77,26 @@ const swaggerOptions = {
             id: {
               type: 'string',
             },
-            username: {
+            name: {
               type: 'string',
             },
             email: {
               type: 'string',
             },
+          },
+        },
+        GetUserDto: { 
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            username: {
+              type: 'string',
+            },
+            email: {
+              type: 'string',
+            }
           },
         },
       },

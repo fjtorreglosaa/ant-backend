@@ -12,12 +12,12 @@ export class UserRoutes {
         const userController = container.resolve<UserController>('UserController');
 
         // Endpoints
-        router.get('/:id', [ AuthMiddleware.validateJWT ], userController.getUserById );
-        router.get('/', [ AuthMiddleware.validateJWT ], userController.getAllUsers );
-        router.get('/byterm', [ AuthMiddleware.validateJWT ], userController.getUsersBySearchedTerm );
-        router.post('/signup', userController.createUser );
-        router.post('/signin', userController.loginUser );
-        router.put('/', [ AuthMiddleware.validateJWT ], userController.updateUser );
+        router.get('/byterm', [AuthMiddleware.validateJWT], userController.getUsersBySearchedTerm);
+        router.get('/', [AuthMiddleware.validateJWT], userController.getAllUsers);
+        router.get('/:id', [AuthMiddleware.validateJWT], userController.getUserById);
+        router.post('/signup', userController.createUser);
+        router.post('/signin', userController.loginUser);
+        router.put('/', [AuthMiddleware.validateJWT], userController.updateUser);
 
         return router;
 

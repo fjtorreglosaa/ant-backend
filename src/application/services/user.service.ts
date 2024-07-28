@@ -167,7 +167,7 @@ export class UserService implements IUserService {
             const userData = UserEntity.fromObject({
                 id: user.id,
                 email: updateUserDto.email.toLowerCase() ?? user.email,
-                password: encrypter.hash( updateUserDto.password ) ?? user.password,
+                password: !updateUserDto.password === undefined ? encrypter.hash( updateUserDto.password ) : user.password,
                 isActive: updateUserDto.isActive ?? user.isActive,
                 profileId: updateUserDto.profileId ?? user.profileId,
                 updatedBy: reqUser.id ?? null,

@@ -1,5 +1,4 @@
 import { regularExps } from "../../../config/plugins";
-import { CreateProfileDto } from "../profile/create-profile.dto";
 
 export class CreateUserDto {
 
@@ -23,7 +22,8 @@ export class CreateUserDto {
         if( !regularExps.email.test( email ) ) return ['Email is not valid'];
         if( !password ) return ['Missing password'];
         if( password.length < 6 ) return ['Missing password'];
-        if( !dependencyId ) return ['Missing dependency'];
+        if( !regularExps.symbolRegex.test(password) ) return ['The password must contain at least one special character'];
+        if( !regularExps.uppercaseRegex.test(password) ) return ['The password must contain at least one capital letter.'];
 
         return [ undefined, new CreateUserDto( name, email, password, groupId, photo, phone, preferences, dependencyId )];
 
