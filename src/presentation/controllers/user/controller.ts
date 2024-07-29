@@ -224,4 +224,11 @@ export class UserController {
             .catch( error => ErrorHandler.handleError( error, res ));
     }
     
+    deleteUser = ( req: Request, res: Response ) => {
+        const userId = req.params.id;
+
+        this.userService.deleteUser( userId )
+            .then( user => res.status(200).json( user ))
+            .catch( error => ErrorHandler.handleError( error, res ) );
+    }
 }
