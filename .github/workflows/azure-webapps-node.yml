@@ -1,0 +1,71 @@
+name: Build and deploy Node.js app to Azure Web App - antapidev
+
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
+      
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: ABC
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
+        with:
+          app-name: 'antapidev'
+          slot-name: 'production'
+          package: .
+          app-settings: |
+            PORT=5000
+            PUBLIC_PATH=public
+            SQLSERVER_URL=sqlserver://antdevelopment.database.windows.net;database=AntDB;user=devantsql;password=devBaby$24+-*;trustServerCertificate=true
+            MSSQL_DATABASE=AntDB
+            MSSQL_SA_PASSWORD=devBaby$24+-*
+            ACCEPT_EULA=Y
+            JWT_SEED=NOykB6uo5BxS8Bh2LbxoONvls0e0Fqc8hsYbTSDrz6o
+            API_URL=http://localhost:5000/api/
+            SERVER=http://localhost:5000
