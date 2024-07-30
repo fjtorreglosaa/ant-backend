@@ -30,6 +30,8 @@ export class UserController {
      */
     createUser = ( req: Request, res: Response ) => {
 
+        return "Test completed!";
+
         const [ error, createUserDto ] = CreateUserDto.create( req.body );
         if( error ) return res.status( 400 ).json({ error });
 
